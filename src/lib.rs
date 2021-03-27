@@ -47,6 +47,16 @@ pub fn approx_equal(a: f64, b: f64, decimal_places: u8) -> bool {
     a == b
 }
 
+//! Returnes a function that, given a point, returns the signed distance from that point to the line. The distance will
+//! be positive if the point is counter clockwise compared to the other two points
+//! ex. Given that A and B define the line and another point C, then `signedDistanceToLineFunction(A, B)(C)` is positive and
+//! `signedDistanceToLineFunction(B, A)(C)` is negative
+//!
+//!        C
+//!        |
+//!        |
+//!   A ---------- B
+//!
 pub fn signed_distance_to_line<'a>(a: &'a Point, b: &'a Point) -> Box<dyn Fn(&Point) -> f64 + 'a + Send + Sync> {
     let mut plane_normal_x = a.y - b.y;
     let mut plane_normal_y = b.x - a.x;
