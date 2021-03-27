@@ -1,6 +1,7 @@
 use std::ptr;
+use serde::{Serialize, Deserialize};
 
-// #[derive(Debug)]
+#[derive(Serialize, Deserialize)]
 pub struct Point {
     pub x: f64,
     pub y: f64
@@ -46,7 +47,7 @@ pub fn approx_equal(a: f64, b: f64, decimal_places: u8) -> bool {
     a == b
 }
 
-pub fn signed_distance_to_line<'a>(a: &'a Point, b: &'a Point) -> Box<dyn Fn(&Point) -> f64 + 'a> {
+pub fn signed_distance_to_line<'a>(a: &'a Point, b: &'a Point) -> Box<dyn Fn(&Point) -> f64 + 'a + Send + Sync> {
     let mut plane_normal_x = a.y - b.y;
     let mut plane_normal_y = b.x - a.x;
 

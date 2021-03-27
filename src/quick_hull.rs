@@ -44,8 +44,8 @@ fn get_hull<'a>(relevant_points:Vec<(&'a Point, f64)>, point_a: &'a Point, point
         return vec![];
     }
 
-    let (highest, _) = relevant_points.par_iter()
-        .fold(relevant_points[0], |p1, p2| if p1.1 > p2.1 {p1} else {*p2});
+    let (highest, _): &(&Point, _) = relevant_points.par_iter()
+        .reduce(|| &relevant_points[0], |p1, p2| if p1.1 > p2.1 {p1} else {p2});
 
     //          highest
     //            / \
@@ -60,7 +60,7 @@ fn get_hull<'a>(relevant_points:Vec<(&'a Point, f64)>, point_a: &'a Point, point
 
     let (left, right): (Vec<(&Point, f64)>, Vec<(&Point, f64)>) = relevant_points.par_iter()
         .map(|(p, _)| *p)
-        .filter(|p| !ptr::eq(*p, highest))
+        .filter(|p| !ptr::eq(*p, *highest))
         .filter_map(|p| to_location(p, line_0_dist(p), line_1_dist(p)))
         .partition_map(|p| p);
 
@@ -197,6 +197,7 @@ mod tests {
         let hull = get_convex_hull(&points);
         println!("Elapsed time: {} ms", now.elapsed().as_millis());
         // without parallelization Elapsed time: 2959 ms
+        // with parallelization: Elapsed time: 1245 ms
         assert!(is_convex_hull(&points, &hull), "Could not find correct hull for big test");
     }
 }
